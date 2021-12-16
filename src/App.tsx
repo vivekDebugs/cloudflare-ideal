@@ -1,26 +1,31 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react'
+import './App.css'
+import { Routes, Route } from 'react-router-dom'
+import { IPost } from './types'
+import Blogs from './components/Blogs'
+import Blog from './components/Blog'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const App: React.FC = (): React.ReactElement => {
+	const [posts, setPosts] = useState<IPost[] | []>([])
+	const fetchPosts = async () => {
+		const url = 'https://serverless-api.vivekkumar.workers.dev/api/posts'
+		const res = await fetch(url)
+		const data = await res.json()
+		console.log(data)
+		setPosts(posts => data)
+	}
+	useEffect(() => {
+		fetchPosts()
+	}, [])
+	return (
+		<div className='App'>
+			<h1 style={{ margin: '.25rem' }}>My Blogs</h1>
+			<Routes>
+				<Route path='/' element={<Blogs posts={posts} />} />
+				<Route path='/post/:postId' element={<Blog />} />
+			</Routes>
+		</div>
+	)
 }
 
-export default App;
+export default App
